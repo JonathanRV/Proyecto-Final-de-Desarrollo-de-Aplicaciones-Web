@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Principal</title>
+        <link rel="stylesheet" href="Bootstrap/css/bootstrap.css"/>
+        <script src="../controlador/jquery-1.11.1.js"></script>
+        <script src="../vista/Bootstrap/js/bootstrap.min.js"></script>
+        <script src="../controlador/angularjs-1.4.7/angular.min.js"></script>
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    </head>
+    <body ng-app="myApp" ng-controller="userCtrl">
+        
+        <div ng-show="login">
+            <div class="wrapper">
+                <form class="form-signin">       
+                    <h2 class="form-signin-heading">Login</h2>
+                    <input type="text" class="form-control" name="username" placeholder="Usuario" required="" autofocus="" ng-model="inputUsuario" />
+                    <br>
+                    <input type="password" class="form-control" name="password" placeholder="Contraseña" required="" ng-model="inputClave"/>  
+                    <br>
+                    <button class="btn btn-lg btn-primary btn-block" ng-click="ingresar()">Login</button>   
+                </form>
+            </div>
+        </div>
+        
+ 
+
+<!-- ------------------------- ESTUDIANTE -------------------------------------------------- !-->
+        
+        
+        
+        <div ng-show="usuarioEstudiante">
+            <div class="container">
+            <h3 ng-model="nombreUsuario">{{nombreUsuario}}</h3>
+            <button class="btn" ng-click="inicioEstudiante()">
+                <span class="glyphicon glyphicon-home"></span> Inicio
+            </button>
+            <button class="btn" ng-click="salirEstudiante()">
+                <span class="glyphicon glyphicon-remove"></span> Salir
+            </button>
+            </div>
+            <br>
+        </div>
+        
+        <div ng-show="estudiante">
+            <div class="container" ng-show="cursosEstudiante">
+                <h3>Cursos</h3>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nombre Curso</th>
+                            <th>Grupo</th>
+                            <th>Codigo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="eval in cursos">
+                            <td>{{ eval.nombre }}</td>
+                            <td>{{ eval.numgrupo }}</td>
+                            <td>{{ eval.codigo }}</td>
+                            <td>
+                                <button class="btn"  ng-click="mostrarInformacion(eval.idgrupo, eval.codigo, eval.numgrupo, eval.nombre)">
+                                    <span class="glyphicon glyphicon-eye-open"></span>  Ver Informacion
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+           
+
+
+<!-- ------------------------- Infromacion Curso Estudiante -------------------------------------------------- !-->
+        
+            
+ 
+            <div ng-show="informacionCurso">
+                <div id="canvas-holder1">
+                    <canvas id="grafico1" width="150" height="250"></canvas>
+                </div>
+                <button class="btn" onclick="desplegarNotas()">
+                    <span class="glyphicon glyphicon-eye-open"></span>  Notas
+                </button>
+            </div>
+            
+            
+            <div class="container" ng-show="notas">
+                <h3>{{nombreCurso}}</h3>
+                <br>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" onclick="desplegarNotas()">Promedio del curso</a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse" ALIGN=center>
+                            <div id="canvas-holder">
+                                <br>
+                                <h3>GRÁFICO CON LAS NOTAS DEL CURSO</h3>
+                                <br>
+                                <canvas id="grafico" width="450" height="350"></canvas>
+                                <br><br>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2" ng-click="mostrarCursos()">Evaluaciones del curso</a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse">
+                            <div class="row">
+                                <div class="panel-body">
+                                    <div ng-show="noHayDatos" ALIGN=center><h2>NO HAY EVALUACIONES</h2></div>
+                                    <div class="container col-xs-12" ng-show="hayDatos">
+                                        <h3>Cursos</h3>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre Evaluacion</th>
+                                                    <th>Porcentaje</th>
+                                                    <th>Nota</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="eval in evaluacionesEstudiante">
+                                                    <td>{{ eval.nombre }}</td>
+                                                    <td>{{ eval.porcentaje }}</td>
+                                                    <td>{{ eval.nota }}</td>
+                                                    <td>
+                                                        <button class="btn"  ng-click="mostrarCita(eval.idevaluacion)">
+                                                            <span class="glyphicon glyphicon-edit"></span> Cita Revision
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+
+<!-- ------------------------- Citas Estudiantes -------------------------------------------------- !-->
+                        
+                
+                
+            
+            <div ng-show="citas">
+                <div class="container" >
+                    <h3>Citas Evaluacion</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora Inicio</th>
+                                <th>Hora Fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="eval in citasEvaluacion">
+                                <td>{{ eval.fecha }}</td>
+                                <td>{{ eval.hora_inicio }}</td>
+                                <td>{{ eval.hora_fin }}</td>
+                                <td>
+                                    <button class="btn"  ng-click="agregarCita(eval.idcita)">
+                                        <span class="glyphicon glyphicon-edit"></span>  Anotarse
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+
+        
+<!-- ------------------------- PROFESOR -------------------------------------------------- !-->
+        
+        
+        <div ng-show="usuarioProfesor">
+            <div class="container">
+            <h3 ng-model="nombreProfesor">{{nombreProfesor}}</h3>
+            <button class="btn" ng-click="inicioProfesor()">
+                <span class="glyphicon glyphicon-home"></span> Inicio
+            </button>
+            <button class="btn" ng-click="salirProfesor()">
+                <span class="glyphicon glyphicon-remove"></span> Salir
+            </button>
+            </div>
+            <br>
+        </div>
+        
+        <div class="container" ng-show="profesorCursos">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Nombre Curso</th>
+                    <th>Grupo</th>
+                    <th>Codigo</th>
+                    <th>Evaluaciones</th>
+                    <th>Estudiantes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="cur in cursosProfesor"><!--genera automaticamente denuevo cada codigo html para mostrat todo-->
+                    <td>{{ cur.nombre }}</td>
+                    <td>{{ cur.numgrupo }}</td>
+                    <td>{{ cur.codigo }}</td>
+                    <td>
+                      <button class="btn" ng-click="mostrarEvaluaciones(cur.numgrupo, cur.codigo, cur.idgrupo)">
+                        <span class="glyphicon glyphicon-eye-open"></span>  Evaluaciones
+                      </button>
+                    </td>
+                    <td>
+                        <button class="btn" ng-click="mostrarEstudiantesCurso(cur.idgrupo)">
+                            <span class="glyphicon glyphicon-education"></span>  Estudiantes
+                        </button>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+        
+
+<!-- ------------------------------- Evaluaciones Profesor --------------------------------- !-->
+
+
+        <div class="container" ng-show="profesorEvaluaciones">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Nombre Evaluacion</th>
+                    <th>Porcentaje</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="eval in evaluacionesProfesor"><!--genera automaticamente denuevo cada codigo html para mostrat todo-->
+                    <td>{{ eval.nombre }}</td>
+                    <td>{{ eval.porcentaje }}</td>
+                    <td>
+                        <button ng-click="obtenerIdEval(eval.idevaluacion, eval.nombre, eval.porcentaje, eval.idgrupo)" class="btn" data-toggle="modal" data-target="#editarEval">
+                            <span class="glyphicon glyphicon-edit"></span> Editar
+                        </button>
+                    </td>
+                    <td>
+                        <button ng-click="mostrarCitasProfesor(eval.idevaluacion)" class="btn">
+                            <span class="glyphicon glyphicon-eye-open"></span> Citas
+                        </button>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+            <hr>
+            <button class="btn" data-toggle="modal" data-target="#nuevaEval">
+                <span class="glyphicon"></span>  Nueva Evaluación
+            </button>
+            <hr>
+        </div>
+        
+<!-- -------------------------------------- Citas Evaluacion Profesor --------------------------------- !-->
+
+
+        <div class="container" ng-show="profesorCitasEvaluaciones">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Hora Inicio </th>
+                    <th>Hora Final</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="eval in citasEvaluacionProfesor"><!--genera automaticamente denuevo cada codigo html para mostrat todo-->
+                    <td>{{ eval.hora_inicio }}</td>
+                    <td>{{ eval.hora_fin }}</td>
+                    <td>{{ eval.fecha }}</td>
+                    <td>
+                        <button ng-click="obtenerIdEvalCitaEditar(eval.idevaluacion, eval.hora_inicio, eval.hora_fin, eval.fecha)" class="btn" data-toggle="modal" data-target="#editarCita">
+                            <span class="glyphicon glyphicon-edit"></span> Editar
+                        </button>
+                    </td>
+                    <td>
+                        <button ng-click="mostrarEstudianteCitaProfesor(eval.idcita)" class="btn" data-toggle="modal" data-target="#estudianteCitaEvaluacion">
+                            <span class="glyphicon glyphicon-education"></span> Ver Estudiante
+                        </button>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+            <hr>
+            <button  class="btn" data-toggle="modal" data-target="#nuevaCita">
+                <span class="glyphicon"></span>  Nueva Cita
+            </button>
+            <hr>
+        </div>
+
+
+        <div id="estudianteCitaEvaluacion" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 ng-model="nombreEstudianteCitaProfesor" class="modal-title"> {{ nombreEstudianteCitaProfesor +" "+ apellido1EstudianteCitaProfesor +" "+ apellido2EstudianteCitaProfesor}}</h4>
+                    </div>
+                    <div ng-show="estudianteCitaProfesorError" class="modal-body" align="center">
+                        <h3> NO HAY ESTUDIANTE ASOCIADO </h3>
+                    </div>
+                    <div ng-show="estudianteCitaProfesor" class="modal-body">
+                        <form class="form-group" role="form">
+                            <div class="form-group">
+                                <label ng-model="horaInicioCitaProfesor">Hora Inicio: {{ horaInicioCitaProfesor }}</label>
+                            </div> 
+                            <div class="form-group">
+                                <label ng-model="horaFinCitaProfesor">Hora Fin: {{ horaFinCitaProfesor }}</label>
+                            </div>
+                            <div class="form-group">
+                                <label ng-model="fechaCitaProfesor">Fecha: {{ fechaCitaProfesor }}</label>
+                            </div>
+                            <hr>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="editarCita" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"> Editar Cita</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-group" role="form">
+                            <div class="form-group">
+                                <label >Hora Inicio</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="horaInicioEditar" placeholder="Hora Inicio">
+                                </div>
+                            </div> 
+                            <div class="form-group">
+                                <label>Hora Fin</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="horaFinEditar" placeholder="Hora Fin">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="fechaCitaEditar" placeholder="Fecha">
+                                </div>
+                            </div>
+                            <hr>
+                            <button class="btn btn-success" ng-disabled="errorCitaEditar" ng-click="guargarCitaEidtarProfesor()" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-save"></span>  Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="nuevaCita" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"> Nueva Cita</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-group" role="form">
+                            <div class="form-group">
+                                <label >Hora Inicio</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="horaInicioNuevo" placeholder="Hora Inicio">
+                                </div>
+                            </div> 
+                            <div class="form-group">
+                                <label>Hora Fin</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="horaFinNuevo" placeholder="Hora Fin">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="fechaCitaNuevo" placeholder="Fecha">
+                                </div>
+                            </div>
+                            <hr>
+                            <button class="btn btn-success" ng-disabled="errorCitaNuevo" ng-click="guargarCitaProfesor()" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-save"></span>  Guardar
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<!-- --------------------------------------- Estudiantes Curso Profesor --------------------------------- !-->
+        
+        
+        <div class="container" ng-show="profesorEstudiantes">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Nombre Estudiante</th>
+                    <th>Carne</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="eval in estudiantesProfesor"><!--genera automaticamente denuevo cada codigo html para mostrat todo-->
+                    <td>{{ eval.nombre +" "+ eval.apellido1 +" "+ eval.apellido2}}</td>
+                    <td>{{ eval.carne }}</td>
+                    <td>
+                      <button class="btn" ng-click="mostrarEvaluacionesEstudiante(eval.cedula)">
+                        <span class="glyphicon glyphicon-eye-open"></span>  Evaluacion
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+            <hr>
+        </div>
+        
+        <div id="editarEval" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"> Editar Evaluaciones</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-group" role="form">
+                            <div class="form-group">
+                                <label >Nombre de la evaluación</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="nombreEdit" placeholder="Nombre de la evaluación">
+                                </div>
+                            </div> 
+                            <div class="form-group">
+                                <label>Porcentaje de evaluación</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="porcentajeEdit" placeholder="Porcentaje de evaluación">
+                                </div>
+                            </div>
+                            <hr>
+                            <button class="btn btn-success" ng-disabled="errorEditar" ng-click="guargarCambios()" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-save"></span>  Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="nuevaEval" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Nueva Evaluaciones</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-group" role="form">
+                            <div class="form-group">
+                                <label >Nombre de la evaluación</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="nombreNuevo" placeholder="Nombre de la evaluación">
+                                </div>
+                            </div> 
+                            <div class="form-group">
+                                <label>Porcentaje de evaluación</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="porcentajeNuevo" placeholder="Porcentaje de evaluación">
+                                </div>
+                            </div>
+                            <hr>
+                            <button class="btn btn-success" ng-disabled="errorNueva" ng-click="guardar()" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-save"></span>  Guardar
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<!-- --------------------------------------- Estudiantes Evaluacion Profesor --------------------------------- !-->
+
+
+        <div class="container" ng-show="profesorEstudianteEvaluaciones">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Nombre Evaluacion</th>
+                    <th>Porcentaje</th>
+                    <th>Nota</th>
+                    <th> Agregar Nota</th>
+                    <th>Editar Nota</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="eval in evaluacionesEstudianteProfesor"><!--genera automaticamente denuevo cada codigo html para mostrat todo-->
+                    <td>{{ eval.nombre }}</td>
+                    <td>{{ eval.porcentaje }}</td>
+                    <td>{{ eval.nota }}</td>
+                    <td>
+                        <button ng-click="obtenerIdEvalAgregarNota(eval.idevaluacion, eval.nombre)" class="btn" data-toggle="modal" data-target="#agregarNotaEstudiante">
+                            <span class="glyphicon glyphicon-plus"></span> Agregar Nota
+                        </button>
+                    </td>
+                    <td>
+                        <button ng-click="obtenerIdEvalEditarNota(eval.idevaluacion, eval.nota, eval.nombre)" class="btn" data-toggle="modal" data-target="#editarNotaEstudiante">
+                            <span class="glyphicon glyphicon-edit"></span> Editar
+                        </button>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        
+        
+        <div id="editarNotaEstudiante" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"> Editar Evaluacion {{ nombreEvaluacionEstudiante }}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-group" role="form">
+                            <div class="form-group">
+                                <label>Nota</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="notaEstudianteEditar" placeholder="Ingrese Nota">
+                                </div>
+                            </div>
+                            <hr>
+                            <button class="btn btn-success" ng-disabled="errorNotaEditar" ng-click="guargarCambiosNotaEstudiante()" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-save"></span>  Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="agregarNotaEstudiante" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"> Agregar Nota {{ nombreEvaluacionEstudiante }}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-group" role="form">
+                            <div class="form-group">
+                                <label>Nota</label>
+                                <div>
+                                    <input type="text" class="form-control" ng-model="notaEstudianteAgregar" placeholder="Ingrese Nota" de evaluación">
+                                </div>
+                            </div>
+                            <hr>
+                            <button class="btn btn-success" ng-disabled="errorNotaAgregar" ng-click="guargarNotaEstudiante()" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-save"></span>  Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="../controlador/Js.js"></script>
+        <script src= "../controlador/metodosPrincipales.js"></script>
+        <script src= "../controlador/angularjs-1.4.7/angularjs-nvd3-directives.min.js.js"></script>
+    </body>
+</html>
